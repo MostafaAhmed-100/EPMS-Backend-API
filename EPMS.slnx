@@ -1,1 +1,6 @@
-<Solution />
+<Solution>
+  <Project Path="EPMS.API/EPMS.API.csproj" Id="32bb940a-ca3b-4e07-8b6d-59cd11d184bc" />
+  <Project Path="EPMS.Application/EPMS.Application.csproj" />
+  <Project Path="EPMS.Domain/EPMS.Domain.csproj" />
+  <Project Path="EPMS.Infrastructure/EPMS.Infrastructure.csproj" />
+</Solution>
