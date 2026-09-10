@@ -13,12 +13,46 @@ namespace EPMS.Domain.Entitys
         public Guid TemplateId { get; private set; }
         public DateRange Period { get; private set; }
         public EvaluationStatus Status { get; private set; }
+        public decimal FinalScore { get; private set; }
         public Employee Employee { get; private set; }
         public Employee Evaluator { get; private set; }
         public EvaluationTemplate Template { get; private set; }
 
         private readonly List<EvaluationResponse> _responses = new();
         public IReadOnlyCollection<EvaluationResponse> Responses => _responses.AsReadOnly();
+        public void CalculateFinalScore(EvaluationTemplate template)
+        {
+            if (template == null)
+            {
+                throw new ArgumentNullException(nameof(template));
+            }
+
+            if (_responses.Count == 0)
+            {
+                FinalScore = 0;
+                return;
+            }
+
+            decimal totalScore = 0;
+
+            foreach (var section in template.Sections)
+            {
+                decimal sectionScore = 0;
+
+                foreach (var criteria in section.Criteria)
+                {
+                    var response = _responses.FirstOrDefault(r => r.CriteriaId == criteria.Id);
+                    if (response != null)
+                    {
+                        sectionScore += response.Score * (criteria.Weight / 100m);
+                    }
+                }
+
+                totalScore += sectionScore * (section.Weight / 100m);
+            }
+
+            FinalScore = Math.Round(totalScore, 2);
+        }
 
         public Evaluation(Guid employeeId, Guid evaluatorId, Guid templateId, DateRange period)
         {

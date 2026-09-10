@@ -1,4 +1,6 @@
-﻿namespace EPMS.Domain.Interfaces
+﻿using System.Data;
+
+namespace EPMS.Domain.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
@@ -7,6 +9,7 @@
         IEvaluationTemplateRepository EvaluationTemplates { get; }
         IEvaluationRepository Evaluations { get; }
 
+        Task<IDbTransaction> BeginTransactionAsync();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
