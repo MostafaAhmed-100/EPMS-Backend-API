@@ -1,7 +1,5 @@
-﻿using EPMS.Application.JWT;
-using EPMS.Domain.Interfaces;
+﻿using EPMS.Domain.Interfaces;
 using EPMS.Infrastructure.Data;
-using EPMS.Infrastructure.JWTServices;
 using EPMS.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

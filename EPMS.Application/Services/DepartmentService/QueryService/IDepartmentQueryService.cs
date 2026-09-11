@@ -3,7 +3,7 @@ using EPMS.Application.DTOs.Shared;
 
 namespace EPMS.Application.Services.DepartmentQueryService.QueryService
 {
-    internal interface IDepartmentQueryService
+    public interface IDepartmentQueryService
     {
         Task<ApiResponseDto<DepartmentResponse>> GetByIdAsync(Guid id);
         Task<ApiResponseDto<IReadOnlyList<DepartmentResponse>>> GetAllAsync();

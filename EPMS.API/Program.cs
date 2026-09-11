@@ -1,8 +1,10 @@
 using EPMS.Application;
-using EPMS.Application.JWT;
+using EPMS.Application.Settings;
+using EPMS.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 using System.Text;
 
 namespace EPMS.API
@@ -15,40 +17,33 @@ namespace EPMS.API
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c =>
+
+            builder.Services.AddOpenApiDocument(config =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "EPMS API", Version = "v1" });
+                config.Title = "EPMS API";
+                config.Version = "v1";
+                config.Description = "Employee Performance Management System API with JWT Authentication";
 
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                config.AddSecurity("Bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme
                 {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
+                    Type = OpenApiSecuritySchemeType.Http,
                     Scheme = "Bearer",
+                    Name = "Authorization",
+                    Description = "Enter JWT Token",
                     BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "أدخل الـ Token فقط هنا:"
+                    In = OpenApiSecurityApiKeyLocation.Header
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
+                config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
             });
 
             builder.Services.AddApplicationServices();
             builder.Services.AddInfrastructureServices(builder.Configuration);
 
-            var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+            var jwtSection = builder.Configuration.GetSection("JwtSettings");
+            builder.Services.Configure<JwtSettings>(jwtSection);
+
+            var jwtSettings = jwtSection.Get<JwtSettings>();
             var key = Encoding.UTF8.GetBytes(jwtSettings?.Secret ?? throw new InvalidOperationException("JWT Secret is not configured."));
 
             builder.Services.AddAuthentication(options =>
@@ -77,8 +72,8 @@ namespace EPMS.API
 
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseOpenApi();
+                app.UseSwaggerUi();
             }
 
             app.UseHttpsRedirection();

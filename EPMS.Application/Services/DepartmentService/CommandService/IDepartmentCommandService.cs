@@ -5,11 +5,7 @@ namespace EPMS.Application.Services.DepartmentQueryService.CommandService
 {
     public interface IDepartmentCommandService
     {
-        public interface IDepartmentCommandService
-        {
-            Task<ApiResponseDto<DepartmentResponse>> CreateAsync(CreateDepartmentRequest request);
-
-            Task<ApiResponseDto<DepartmentResponse>> UpdateAsync(Guid id, UpdateDepartmentRequest request);
-        }
+        Task<ApiResponseDto<DepartmentResponse>> CreateAsync(CreateDepartmentRequest request);
+        Task<ApiResponseDto<DepartmentResponse>> UpdateAsync(Guid id, UpdateDepartmentRequest request);
     }
 }
