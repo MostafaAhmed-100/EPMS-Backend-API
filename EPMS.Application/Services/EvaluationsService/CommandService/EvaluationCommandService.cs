@@ -26,7 +26,6 @@ namespace EPMS.Application.Services.EvaluationsService.CommandService
 
         public async Task<ApiResponseDto<Guid>> InitiateEvaluationAsync(InitiateEvaluationRequest request)
         {
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 if (request.EmployeeId == request.EvaluatorId)
@@ -69,7 +68,6 @@ namespace EPMS.Application.Services.EvaluationsService.CommandService
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully initiated evaluation {EvaluationId} for employee {EmployeeId}.", evaluation.Id, request.EmployeeId);
-                transaction.Commit();
 
                 return new ApiResponseDto<Guid>
                 {
@@ -79,7 +77,6 @@ namespace EPMS.Application.Services.EvaluationsService.CommandService
             }
             catch (Exception ex)
             {
-                transaction.Rollback();
                 _logger.LogError(ex, "Error occurred while Initiating Evaluation for Employee {EmployeeId}", request.EmployeeId);
                 throw;
             }
@@ -87,7 +84,6 @@ namespace EPMS.Application.Services.EvaluationsService.CommandService
 
         public async Task<ApiResponseDto<string>> SubmitScoresAsync(Guid evaluationId, SubmitEvaluationResponsesRequest request) 
         { 
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var evaluation = await _unitOfWork.Evaluations.GetByIdWithResponsesAsync(evaluationId);
@@ -128,7 +124,6 @@ namespace EPMS.Application.Services.EvaluationsService.CommandService
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully submitted scores and completed evaluation {EvaluationId}.", evaluationId);
-                transaction.Commit();
 
                 return new ApiResponseDto<string>
                 {
@@ -138,7 +133,6 @@ namespace EPMS.Application.Services.EvaluationsService.CommandService
             }
             catch (Exception ex)
             {
-                transaction.Rollback();
                 _logger.LogError(ex, "Error occurred while Submitting Scores for Evaluation {EvaluationId}", evaluationId);
                 throw;
             }
@@ -146,7 +140,6 @@ namespace EPMS.Application.Services.EvaluationsService.CommandService
 
         public async Task<ApiResponseDto<string>> CancelEvaluationAsync(Guid evaluationId)
         {
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var evaluation = await _unitOfWork.Evaluations.GetByIdWithResponsesAsync(evaluationId);
@@ -162,7 +155,6 @@ namespace EPMS.Application.Services.EvaluationsService.CommandService
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully cancelled evaluation {EvaluationId}.", evaluationId);
-                transaction.Commit();
 
                 return new ApiResponseDto<string>
                 {
@@ -172,7 +164,6 @@ namespace EPMS.Application.Services.EvaluationsService.CommandService
             }
             catch (Exception ex)
             {
-                transaction.Rollback();
                 _logger.LogError(ex, "Error occurred while Cancelling Evaluation {EvaluationId}", evaluationId);
                 throw;
             }

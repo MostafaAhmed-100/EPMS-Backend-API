@@ -25,7 +25,7 @@ namespace EPMS.API.Controllers
         }
 
         [HttpPost("initiate")]
-        [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR},{AppRoles.Manager}")]
+        //[Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR},{AppRoles.Manager}")]
         [ProducesResponseType(typeof(ApiResponseDto<Guid>), StatusCodes.Status201Created)]
         public async Task<IActionResult> Initiate([FromBody] InitiateEvaluationRequest request)
         {
@@ -34,7 +34,7 @@ namespace EPMS.API.Controllers
         }
 
         [HttpPost("{id:guid}/submit-scores")]
-        [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.Manager}")]
+        //[Authorize(Roles = $"{AppRoles.Admin},{AppRoles.Manager}")]
         [ProducesResponseType(typeof(ApiResponseDto<string>), StatusCodes.Status200OK)]
         public async Task<IActionResult> SubmitScores([FromRoute] Guid id, [FromBody] SubmitEvaluationResponsesRequest request)
         {
@@ -43,7 +43,7 @@ namespace EPMS.API.Controllers
         }
 
         [HttpPatch("{id:guid}/cancel")]
-        [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR}")]
+        //[Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR}")]
         [ProducesResponseType(typeof(ApiResponseDto<string>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Cancel([FromRoute] Guid id)
         {
@@ -68,7 +68,7 @@ namespace EPMS.API.Controllers
         }
 
         [HttpGet("evaluator/{evaluatorId:guid}")]
-        [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR},{AppRoles.Manager}")]
+        //[Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR},{AppRoles.Manager}")]
         [ProducesResponseType(typeof(ApiResponseDto<IReadOnlyList<EvaluationSummaryResponse>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetByEvaluatorId([FromRoute] Guid evaluatorId)
         {

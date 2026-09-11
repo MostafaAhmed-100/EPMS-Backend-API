@@ -42,14 +42,44 @@ namespace EPMS.Application.Services.AuthService
 
         public async Task<ApiResponseDto<AuthResponseDto>> RegisterEmployeeAsync(RegisterEmployeeRequestDto request)
         {
+            var existingUser = await _userManager.FindByEmailAsync(request.Email);
+            if (existingUser != null)
+            {
+                _logger.LogWarning("Registration failed: Email {Email} is already registered.", request.Email);
+                throw new InvalidOperationException("This email already has an account.");
+            }
+
+            var assignedRole = string.IsNullOrWhiteSpace(request.Role) ? AppRoles.Employee : request.Role;
+            if (!await _roleManager.RoleExistsAsync(assignedRole))
+            {
+                await _roleManager.CreateAsync(new IdentityRole<Guid> { Name = assignedRole });
+            }
+
+            var newId = Guid.NewGuid();
+
+            var identityUser = new IdentityUser<Guid>
+            {
+                Id = newId,
+                UserName = request.Email,
+                Email = request.Email,
+                EmailConfirmed = true
+            };
+
             using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                var existingUser = await _userManager.FindByEmailAsync(request.Email);
-                if (existingUser != null)
+                var createResult = await _userManager.CreateAsync(identityUser, request.Password);
+                if (!createResult.Succeeded)
                 {
-                    _logger.LogWarning("Registration failed: Email {Email} is already registered.", request.Email);
-                    throw new InvalidOperationException("This email already has an account.");
+                    var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
+                    throw new InvalidOperationException($"Account creation failed: {errors}");
+                }
+
+                var roleResult = await _userManager.AddToRoleAsync(identityUser, assignedRole);
+                if (!roleResult.Succeeded)
+                {
+                    var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
+                    throw new InvalidOperationException($"Failed to assign role: {errors}");
                 }
 
                 var employeeCreateCommand = new CreateEmployeeRequest
@@ -64,31 +94,8 @@ namespace EPMS.Application.Services.AuthService
                 var employeeResult = await _employeeCommandService.CreateAsync(employeeCreateCommand);
                 var createdEmployee = employeeResult.Data;
 
-                var identityUser = new IdentityUser<Guid>
-                {
-                    Id = createdEmployee.Id, 
-                    UserName = request.Email,
-                    Email = request.Email,
-                    EmailConfirmed = true
-                };
+                await transaction.CommitAsync();
 
-                var createResult = await _userManager.CreateAsync(identityUser, request.Password);
-                if (!createResult.Succeeded)
-                {
-                    var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
-                    _logger.LogWarning("Failed to create Identity account for {Email}: {Errors}", request.Email, errors);
-                    throw new InvalidOperationException($"Account creation failed: {errors}");
-                }
-
-                var assignedRole = string.IsNullOrWhiteSpace(request.Role) ? AppRoles.Employee : request.Role;
-                if (!await _roleManager.RoleExistsAsync(assignedRole))
-                {
-                    await _roleManager.CreateAsync(new IdentityRole<Guid> { Name = assignedRole });
-                }
-
-                await _userManager.AddToRoleAsync(identityUser, assignedRole);
-
-                transaction.Commit();
                 _logger.LogInformation("Employee {EmployeeId} registered successfully with role {Role}.", createdEmployee.Id, assignedRole);
 
                 var token = GenerateJwtToken(identityUser, assignedRole, createdEmployee.Id);
@@ -108,7 +115,7 @@ namespace EPMS.Application.Services.AuthService
             }
             catch (Exception ex)
             {
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "Error occurred during RegisterEmployeeAsync for {Email}", request.Email);
                 throw;
             }

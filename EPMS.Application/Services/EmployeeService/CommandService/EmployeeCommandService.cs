@@ -25,7 +25,6 @@ namespace EPMS.Application.Services.EmployeeService.CommandService
 
         public async Task<ApiResponseDto<EmployeeResponse>> CreateAsync(CreateEmployeeRequest request)
         {
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var department = await _unitOfWork.Departments.GetByIdAsync(request.DepartmentId);
@@ -46,7 +45,6 @@ namespace EPMS.Application.Services.EmployeeService.CommandService
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully created new employee {EmployeeId} in department {DepartmentId}.", employee.Id, request.DepartmentId);
-                transaction.Commit();
 
                 return new ApiResponseDto<EmployeeResponse>
                 {
@@ -56,7 +54,6 @@ namespace EPMS.Application.Services.EmployeeService.CommandService
             }
             catch (Exception ex)
             {
-                 transaction.Rollback();
                 _logger.LogError(ex, "Error occurred while Creating Employee {FirstName} {LastName}", request.FirstName, request.LastName);
                 throw;
             }
@@ -64,7 +61,6 @@ namespace EPMS.Application.Services.EmployeeService.CommandService
 
         public async Task<ApiResponseDto<string>> ChangeDepartmentAsync(Guid employeeId, UpdateEmployeeDepartmentRequest request)
         {
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var employee = await _unitOfWork.Employees.GetByIdAsync(employeeId);
@@ -87,7 +83,6 @@ namespace EPMS.Application.Services.EmployeeService.CommandService
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully transferred Employee {EmployeeId} to Department {DepartmentId}.", employeeId, request.NewDepartmentId);
-                 transaction.Commit();
 
                 return new ApiResponseDto<string>
                 {
@@ -97,7 +92,6 @@ namespace EPMS.Application.Services.EmployeeService.CommandService
             }
             catch (Exception ex)
             {
-                 transaction.Rollback();
                 _logger.LogError(ex, "Error occurred while Changing Department for Employee {EmployeeId}", employeeId);
                 throw;
             }
@@ -105,7 +99,6 @@ namespace EPMS.Application.Services.EmployeeService.CommandService
 
         public async Task<ApiResponseDto<string>> DeactivateAsync(Guid employeeId)
         {
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var employee = await _unitOfWork.Employees.GetByIdAsync(employeeId);
@@ -121,7 +114,6 @@ namespace EPMS.Application.Services.EmployeeService.CommandService
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully deactivated Employee {EmployeeId}.", employeeId);
-                transaction.Commit();
 
                 return new ApiResponseDto<string>
                 {
@@ -131,7 +123,6 @@ namespace EPMS.Application.Services.EmployeeService.CommandService
             }
             catch (Exception ex)
             {
-                transaction.Rollback();
                 _logger.LogError(ex, "Error occurred while Deactivating Employee {EmployeeId}", employeeId);
                 throw;
             }

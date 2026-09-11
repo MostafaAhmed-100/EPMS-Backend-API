@@ -25,7 +25,6 @@ namespace EPMS.Application.Services.DepartmentQueryService.CommandService
 
         public async Task<ApiResponseDto<DepartmentResponse>> CreateAsync(CreateDepartmentRequest request)
         {
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var department = new Department(request.Name, request.Description);
@@ -34,7 +33,6 @@ namespace EPMS.Application.Services.DepartmentQueryService.CommandService
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully created a new department {DepartmentId}.", department.Id);
-                 transaction.Commit();
 
                 return new ApiResponseDto<DepartmentResponse>
                 {
@@ -44,7 +42,6 @@ namespace EPMS.Application.Services.DepartmentQueryService.CommandService
             }
             catch (Exception ex)
             {
-                 transaction.Rollback();
                 _logger.LogError(ex, "Error occurred while Creating Department {DepartmentName}", request.Name);
                 throw;
             }
@@ -52,7 +49,6 @@ namespace EPMS.Application.Services.DepartmentQueryService.CommandService
 
         public async Task<ApiResponseDto<DepartmentResponse>> UpdateAsync(Guid id, UpdateDepartmentRequest request)
         {
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var department = await _unitOfWork.Departments.GetByIdAsync(id);
@@ -69,7 +65,6 @@ namespace EPMS.Application.Services.DepartmentQueryService.CommandService
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully updated Department {DepartmentId}.", id);
-                 transaction.Commit();
 
                 return new ApiResponseDto<DepartmentResponse>
                 {
@@ -79,7 +74,6 @@ namespace EPMS.Application.Services.DepartmentQueryService.CommandService
             }
             catch (Exception ex)
             {
-                 transaction.Rollback();
                 _logger.LogError(ex, "Error occurred while Updating Department {DepartmentId}", id);
                 throw;
             }

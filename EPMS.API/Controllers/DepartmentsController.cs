@@ -10,7 +10,7 @@ namespace EPMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class DepartmentsController : ControllerBase
     {
         private readonly IDepartmentCommandService _commandService;
@@ -25,7 +25,7 @@ namespace EPMS.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = AppRoles.Admin)]
+        //[Authorize(Roles = AppRoles.Admin)]
         [ProducesResponseType(typeof(ApiResponseDto<DepartmentResponse>), StatusCodes.Status201Created)]
         public async Task<IActionResult> Create([FromBody] CreateDepartmentRequest request)
         {
@@ -34,7 +34,7 @@ namespace EPMS.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = AppRoles.Admin)]
+        //[Authorize(Roles = AppRoles.Admin)]
         [ProducesResponseType(typeof(ApiResponseDto<DepartmentResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDepartmentRequest request)
         {

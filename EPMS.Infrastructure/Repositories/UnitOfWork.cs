@@ -24,10 +24,9 @@ namespace EPMS.Infrastructure.Repositories
             Evaluations = new EvaluationRepository(_context);
         }
 
-        public async Task<IDbTransaction> BeginTransactionAsync()
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
         {
-            var transaction = await _context.Database.BeginTransactionAsync();
-            return transaction.GetDbTransaction();
+            return await _context.Database.BeginTransactionAsync();
         }
 
         public async Task<int> SaveChangesAsync()

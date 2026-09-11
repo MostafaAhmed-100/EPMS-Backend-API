@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 
 namespace EPMS.Domain.Interfaces
 {
@@ -9,7 +10,7 @@ namespace EPMS.Domain.Interfaces
         IEvaluationTemplateRepository EvaluationTemplates { get; }
         IEvaluationRepository Evaluations { get; }
 
-        Task<IDbTransaction> BeginTransactionAsync();
+        Task<IDbContextTransaction> BeginTransactionAsync();
         Task<int> SaveChangesAsync();
     }
 }

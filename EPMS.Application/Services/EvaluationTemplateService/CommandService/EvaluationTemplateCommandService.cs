@@ -28,7 +28,6 @@ namespace EPMS.Application.Services.EvaluationTemplateService.CommandService
 
         public async Task<ApiResponseDto<Guid>> CreateAsync(CreateTemplateRequest request)
         {
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var template = new EvaluationTemplate(request.Title, request.Description);
@@ -49,7 +48,6 @@ namespace EPMS.Application.Services.EvaluationTemplateService.CommandService
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully created Evaluation Template {TemplateId} with {SectionCount} sections.", template.Id, template.Sections.Count);
-                transaction.Commit();
 
                 return new ApiResponseDto<Guid>
                 {
@@ -59,7 +57,6 @@ namespace EPMS.Application.Services.EvaluationTemplateService.CommandService
             }
             catch (Exception ex)
             {
-                transaction.Rollback();
                 _logger.LogError(ex, "Error occurred while Creating Evaluation Template {TemplateTitle}", request.Title);
                 throw;
             }
@@ -67,7 +64,6 @@ namespace EPMS.Application.Services.EvaluationTemplateService.CommandService
 
         public async Task<ApiResponseDto<string>> DeactivateAsync(Guid id)
         {
-            using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var template = await _unitOfWork.EvaluationTemplates.GetByIdWithDetailsAsync(id);
@@ -83,7 +79,6 @@ namespace EPMS.Application.Services.EvaluationTemplateService.CommandService
                 await _unitOfWork.SaveChangesAsync();
 
                 _logger.LogInformation("Successfully deactivated Evaluation Template {TemplateId}.", id);
-                transaction.Commit();
 
                 return new ApiResponseDto<string>
                 {
@@ -93,7 +88,6 @@ namespace EPMS.Application.Services.EvaluationTemplateService.CommandService
             }
             catch (Exception ex)
             {
-                transaction.Rollback();
                 _logger.LogError(ex, "Error occurred while Deactivating Evaluation Template {TemplateId}", id);
                 throw;
             }

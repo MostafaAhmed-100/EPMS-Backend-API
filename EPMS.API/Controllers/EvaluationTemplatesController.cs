@@ -25,7 +25,7 @@ namespace EPMS.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR}")]
+        //[Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR}")]
         [ProducesResponseType(typeof(ApiResponseDto<Guid>), StatusCodes.Status201Created)]
         public async Task<IActionResult> Create([FromBody] CreateTemplateRequest request)
         {
@@ -34,7 +34,7 @@ namespace EPMS.API.Controllers
         }
 
         [HttpPatch("{id:guid}/deactivate")]
-        [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR}")]
+        //[Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR}")]
         [ProducesResponseType(typeof(ApiResponseDto<string>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Deactivate([FromRoute] Guid id)
         {
@@ -43,7 +43,7 @@ namespace EPMS.API.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR},{AppRoles.Manager}")]
+        //[Authorize(Roles = $"{AppRoles.Admin},{AppRoles.HR},{AppRoles.Manager}")]
         [ProducesResponseType(typeof(ApiResponseDto<EvaluationTemplateResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
