@@ -20,6 +20,7 @@ namespace EPMS.Domain.Entitys
 
         private readonly List<EvaluationResponse> _responses = new();
         public IReadOnlyCollection<EvaluationResponse> Responses => _responses.AsReadOnly();
+        protected Evaluation() { }
         public void CalculateFinalScore(EvaluationTemplate template)
         {
             if (template == null)

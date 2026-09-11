@@ -10,6 +10,6 @@ namespace EPMS.Domain.Interfaces
         IEvaluationRepository Evaluations { get; }
 
         Task<IDbTransaction> BeginTransactionAsync();
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        Task<int> SaveChangesAsync();
     }
 }

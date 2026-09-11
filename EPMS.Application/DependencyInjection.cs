@@ -1,4 +1,5 @@
-﻿using EPMS.Application.Services.DepartmentQueryService.CommandService;
+﻿using EPMS.Application.Services.AuthService;
+using EPMS.Application.Services.DepartmentQueryService.CommandService;
 using EPMS.Application.Services.DepartmentQueryService.QueryService;
 using EPMS.Application.Services.EmployeeService.CommandService;
 using EPMS.Application.Services.EmployeeService.QueryService;
@@ -27,6 +28,7 @@ namespace EPMS.Application
             services.AddScoped<IEvaluationTemplateCommandService, EvaluationTemplateCommandService>();
             services.AddScoped<IEvaluationQueryService, EvaluationQueryService>();
             services.AddScoped<IEvaluationCommandService, EvaluationCommandService>();
+            services.AddScoped<IAuthService, AuthService>();
 
             return services;
         }
