@@ -27,14 +27,12 @@ namespace EPMS.API
                 config.AddSecurity("Bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme
                 {
                     Type = OpenApiSecuritySchemeType.Http,
-                    Scheme = "Bearer",
-                    Name = "Authorization",
-                    Description = "Enter JWT Token",
+                    Scheme = "bearer",
                     BearerFormat = "JWT",
-                    In = OpenApiSecurityApiKeyLocation.Header
+                    Description = "Type your JWT token here to authenticate"
                 });
 
-                config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
+                config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
             });
 
             builder.Services.AddApplicationServices();
@@ -70,11 +68,12 @@ namespace EPMS.API
 
             var app = builder.Build();
 
-            if (app.Environment.IsDevelopment())
+            app.UseOpenApi();
+            app.UseSwaggerUi(settings =>
             {
-                app.UseOpenApi();
-                app.UseSwaggerUi();
-            }
+                settings.Path = "/swagger";
+                settings.DocumentPath = "/swagger/v1/swagger.json";
+            });
 
             app.UseHttpsRedirection();
 
